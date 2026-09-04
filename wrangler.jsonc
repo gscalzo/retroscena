@@ -38,6 +38,6 @@
   // skipped — see worker/access.ts.
   "vars": {
     "ACCESS_TEAM_DOMAIN": "plain-glitter-718b",
-    "ACCESS_AUD": "ACCESS_AUD",
+    "ACCESS_AUD": "0bcf321c2dc44aa46d749d9368271cc2dd7ba3ae75eeface0bae70b27a9063e5",
   },
 }
