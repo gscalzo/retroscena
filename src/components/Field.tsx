@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { AutoTextarea } from './AutoTextarea';
 
 export function Field({
   label,
@@ -13,7 +14,7 @@ export function Field({
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
-      <textarea
+      <AutoTextarea
         id={id}
         className="input"
         value={value}

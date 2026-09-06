@@ -897,6 +897,13 @@ main {
   align-items: center;
   gap: 8px;
 }
+.run-label {
+  color: var(--ink);
+  margin: 4px 12px 0;
+}
+.bench-label {
+  margin: 10px 12px 0;
+}
 .zone-label .zbtn {
   border: 1px solid var(--line);
   background: var(--surface);
@@ -953,12 +960,36 @@ main {
   transition:
     transform var(--motion),
     box-shadow var(--motion);
-  cursor: grab;
+  cursor: default;
 }
 .mini:hover {
   transform: rotate(0deg);
   box-shadow: var(--shadow-lift);
   z-index: 2;
+}
+.mini.dragging {
+  opacity: 0.5;
+  transform: rotate(0deg) scale(0.98);
+  box-shadow: var(--shadow-none);
+}
+.drag-handle {
+  display: block;
+  width: max-content;
+  margin: -3px 0 4px auto;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.45;
+  cursor: grab;
+  user-select: none;
+}
+.drag-handle:hover {
+  opacity: 1;
+}
+.drag-handle:active {
+  cursor: grabbing;
 }
 .mini-text {
   margin: 0;
@@ -1168,23 +1199,26 @@ main {
   counter-reset: beat;
 }
 .runlist li {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
   gap: 6px;
   align-items: flex-start;
-  background: var(--surface2);
-  border-left: 3px solid var(--note-bg, var(--line));
-  border-radius: var(--radius-sm);
-  padding: 6px 7px;
+  background: transparent;
+  border-radius: var(--radius-md);
+  padding: 2px;
   font-size: 12.5px;
   line-height: 1.35;
-  cursor: grab;
+  transition:
+    transform var(--motion),
+    opacity var(--motion);
 }
 .runlist li.insert-before {
   box-shadow: var(--shadow-insert-before);
+  transform: translateY(2px);
 }
 .runlist li.insert-after {
   box-shadow: var(--shadow-insert-after);
+  transform: translateY(-2px);
 }
 .runlist li::before {
   counter-increment: beat;
@@ -1195,6 +1229,40 @@ main {
   padding-top: 2px;
   min-width: 13px;
   flex: none;
+}
+.runlist li > .run-card {
+  grid-column: 2;
+  background: var(--surface2);
+  color: var(--ink);
+  border-left: 4px solid var(--note-bg, var(--line));
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-none);
+  padding: 8px 10px 7px;
+  transform: none;
+}
+.runlist li > .run-card:hover {
+  transform: translateX(2px);
+  box-shadow: var(--shadow);
+}
+.run-card .mini-edit {
+  min-height: 3.2em;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: transparent;
+  outline-color: var(--line);
+}
+.run-card .mini-type,
+.run-card .rbtn,
+.run-card .morebtn {
+  color: var(--ink);
+}
+.run-card .note-placement select {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line);
+}
+.run-card .mini-more {
+  border-top-color: var(--line);
 }
 .runlist li > .run-text {
   flex: 1;
@@ -1228,19 +1296,6 @@ main {
   padding: 9px;
   text-align: center;
   margin: 0;
-}
-.badge-star {
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 700;
-}
-.badge-x3 {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 700;
-  background: var(--badge-bg);
-  border-radius: var(--radius-xs);
-  padding: 0 4px;
 }
 .badge-retired {
   font-family: var(--font-mono);
@@ -1956,6 +2011,26 @@ footer.roomfoot p {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+.undo-toast {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: auto;
+}
+.undo-toast button {
+  border: 0;
+  border-left: 1px solid var(--ink-muted);
+  background: transparent;
+  color: var(--bg);
+  padding: 0 0 0 14px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.undo-toast button:hover {
+  color: var(--accent);
+}
 
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -1987,7 +2062,8 @@ footer.roomfoot p {
 textarea.input {
   width: 100%;
   min-height: 110px;
-  resize: vertical;
+  resize: none;
+  overflow-y: hidden;
 }
 .stepnav {
   display: flex;
@@ -2019,8 +2095,9 @@ textarea.input {
 }
 textarea.hook-text {
   width: 100%;
-  resize: vertical;
+  resize: none;
   min-height: 130px;
+  overflow-y: hidden;
 }
 .document-status {
   margin-left: auto;
@@ -2066,9 +2143,6 @@ textarea.hook-text {
 .rbtns {
   opacity: 1;
 }
-.runlist li {
-  display: block;
-}
 .runlist li > .mini {
   width: 100%;
 }
@@ -2077,6 +2151,7 @@ textarea.hook-text {
   justify-content: flex-end;
   gap: 4px;
   padding-top: 6px;
+  grid-column: 2;
 }
 .add-note {
   align-self: start;

@@ -2,6 +2,7 @@ import { Fragment } from 'react';
 import { HOOK_KEYS } from '../../shared/types';
 import type { Bench } from '../../shared/types';
 import { wordCount } from '../../shared/format';
+import { AutoTextarea } from '../components/AutoTextarea';
 import { Field } from '../components/Field';
 
 export function BenchFoundation({
@@ -85,7 +86,7 @@ export function BenchFoundation({
             <Fragment key={key}>
               <div className="tfd-rowh">{key}</div>
               {(['now', 'after'] as const).map((side) => (
-                <textarea
+                <AutoTextarea
                   key={side}
                   className="input"
                   aria-label={`${key}, ${side}`}
@@ -129,7 +130,7 @@ export function BenchFoundation({
                 />{' '}
                 {key}
               </label>
-              <textarea
+              <AutoTextarea
                 className="hook-text"
                 aria-label={`${key} hook`}
                 value={bench.hook.texts[key]}

@@ -8,24 +8,50 @@ import { RichText } from './RichText';
 interface Props {
   bench: Bench;
   note: Note;
+  appearance: 'bench' | 'run';
   showDetails: boolean;
   onChange: (bench: Bench) => void;
+  onAction: (bench: Bench, message: string) => void;
   onMove: (destination: string) => void;
 }
 
-export function NoteCard({ bench, note, showDetails, onChange, onMove }: Props) {
+export function NoteCard({
+  bench,
+  note,
+  appearance,
+  showDetails,
+  onChange,
+  onAction,
+  onMove,
+}: Props) {
   const [expanded, setExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const category = categoryOf(bench, note);
   const open = expanded || showDetails;
   const patch = (value: Partial<Note>) => onChange(updateNote(bench, note.id, value));
+  const retire = () => {
+    const retired = !note.retired;
+    onAction(updateNote(bench, note.id, { retired }), retired ? 'Note retired' : 'Note restored');
+  };
   return (
     <div
-      className={`mini ${note.retired ? 'retired' : ''}`}
+      className={`mini ${appearance}-card ${note.retired ? 'retired' : ''} ${dragging ? 'dragging' : ''}`}
       data-swatch={category.swatch}
-      draggable
-      onDragStart={(event) => beginDrag(event, note.id)}
     >
+      <span
+        className="drag-handle"
+        draggable
+        aria-hidden="true"
+        title="Drag to move"
+        onDragStart={(event) => {
+          setDragging(true);
+          beginDrag(event, note.id);
+        }}
+        onDragEnd={() => setDragging(false)}
+      >
+        ⠿ Drag
+      </span>
       <textarea
         className="mini-edit"
         aria-label="Note text"
@@ -48,26 +74,10 @@ export function NoteCard({ bench, note, showDetails, onChange, onMove }: Props) 
         </select>
         <div className="rbtns">
           <button
-            className={`rbtn ${note.star ? 'on' : ''}`}
-            aria-label="STAR moment"
-            aria-pressed={note.star}
-            onClick={() => patch({ star: !note.star })}
-          >
-            ★
-          </button>
-          <button
-            className={`rbtn ${note.x3 ? 'on' : ''}`}
-            aria-label="Repeated line"
-            aria-pressed={note.x3}
-            onClick={() => patch({ x3: !note.x3 })}
-          >
-            ×3
-          </button>
-          <button
             className={`rbtn ${note.retired ? 'on' : ''}`}
             aria-label="Retired"
             aria-pressed={note.retired}
-            onClick={() => patch({ retired: !note.retired })}
+            onClick={retire}
           >
             Retire
           </button>
